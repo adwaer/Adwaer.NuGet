@@ -1,0 +1,1 @@
+﻿There are base classes for db entities
