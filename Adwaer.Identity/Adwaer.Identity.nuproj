@@ -19,7 +19,7 @@
   <Import Project="$(NuProjPath)\NuProj.props" Condition="Exists('$(NuProjPath)\NuProj.props')" />
   <PropertyGroup Label="Configuration">
     <Id>Adwaer.Identity</Id>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
     <Title>Adwaer.Identity</Title>
     <Authors>adwaer</Authors>
     <Owners>adwaer</Owners>
@@ -38,7 +38,7 @@
     <Content Include="Readme.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NK.Identity\Adwaer.Identity.csproj" />
+    <ProjectReference Include="..\AW.Identity\Adwaer.Identity.csproj" />
   </ItemGroup>
   <Import Project="$(NuProjPath)\NuProj.targets" />
 </Project>
