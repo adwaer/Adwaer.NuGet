@@ -11,6 +11,7 @@ using Adwaer.Identity.ViewModel;
 
 namespace Adwaer.Identity.Controllers
 {
+    [AllowAnonymous]
     public class SimpleCustomerController : ApiController
     {
         private readonly UserManager<SimpleCustomerAccount, Guid> _userManager;
