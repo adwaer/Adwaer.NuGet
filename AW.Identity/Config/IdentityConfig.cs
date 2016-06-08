@@ -4,39 +4,33 @@ using Autofac;
 using Autofac.Integration.WebApi;
 using AutoMapper;
 using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
-using Adwaer.Identity.Entitites;
 
 namespace Adwaer.Identity.Config
 {
-    public static class IdentityConfig
+    public static class IdentityConfig<T, TRole> where T : IdentityUser<Guid, IdentityUserLogin<Guid>, TRole, IdentityUserClaim<Guid>> where TRole : IdentityUserRole<Guid>, new()
     {
         public static void Ioc(ContainerBuilder builder)
         {
-            builder.RegisterType<IdentityUserStore>()
-                .As<IUserStore<SimpleCustomerAccount, Guid>>()
+            builder.RegisterType<IdentityUserStore<T, TRole>>()
+                .As<IUserStore<T, Guid>>()
                 .AsSelf()
                 .InstancePerLifetimeScope();
 
-            builder.RegisterType<IdentityUserManager>()
-                .As<UserManager<SimpleCustomerAccount, Guid>>()
+            builder.RegisterType<IdentityUserManager<T>>()
+                .As<UserManager<T, Guid>>()
                 .AsSelf()
                 .InstancePerLifetimeScope();
 
-            builder.RegisterType<SignInManager<SimpleCustomerAccount, Guid>>()
+            builder.RegisterType<SignInManager<T, Guid>>()
                 .AsSelf()
                 .InstancePerLifetimeScope();
 
             builder.Register(c => HttpContext.Current.GetOwinContext().Authentication)
                 .InstancePerLifetimeScope();
 
-            builder
-                .Register(c => IdentityMapper.Register())
-                .Keyed<IMapper>("identityMapping")
-                .As<IMapper>()
-                .SingleInstance();
-
-            builder.RegisterApiControllers(typeof(IdentityConfig).Assembly);
+            builder.RegisterApiControllers(typeof(IdentityConfig<T, TRole>).Assembly);
         }
     }
 }

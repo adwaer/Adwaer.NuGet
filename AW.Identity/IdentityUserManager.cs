@@ -1,25 +1,25 @@
 ﻿using System;
 using System.Data.Entity;
 using Microsoft.AspNet.Identity;
-using SimpleCustomerAccount = Adwaer.Identity.Entitites.SimpleCustomerAccount;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace Adwaer.Identity
 {
-    public class IdentityUserManager : UserManager<SimpleCustomerAccount, Guid>
+    public class IdentityUserManager<T> : UserManager<T, Guid> where T : class, IUser<Guid>
     {
-        public IdentityUserManager(IUserStore<SimpleCustomerAccount, Guid> store) 
+        public IdentityUserManager(IUserStore<T, Guid> store) 
             : base(store)
         {
-            UserTokenProvider = new TotpSecurityStampBasedTokenProvider<SimpleCustomerAccount, Guid>();
-            UserValidator = new UserValidator<SimpleCustomerAccount, Guid>(this)
+            UserTokenProvider = new TotpSecurityStampBasedTokenProvider<T, Guid>();
+            UserValidator = new UserValidator<T, Guid>(this)
             {
                 AllowOnlyAlphanumericUserNames = false
             };
         }
         
-        public static IdentityUserManager Get(DbContext dncontext)
+        public static IdentityUserManager<TEntity> Get<TEntity, TRole>(DbContext dncontext) where TEntity : IdentityUser<Guid, IdentityUserLogin<Guid>, TRole, IdentityUserClaim<Guid>> where TRole : IdentityUserRole<Guid>, new()
         {
-            return new IdentityUserManager(new IdentityUserStore(dncontext));
+            return new IdentityUserManager<TEntity>(new IdentityUserStore<TEntity, TRole>(dncontext));
         }
     }
 }

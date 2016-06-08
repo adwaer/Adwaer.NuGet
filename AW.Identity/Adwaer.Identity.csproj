@@ -89,10 +89,6 @@
   <ItemGroup>
     <Compile Include="Config\IdentityConfig.cs" />
     <Compile Include="Controllers\SimpleCutomerController.cs" />
-    <Compile Include="Entitites\Customer.cs" />
-    <Compile Include="Entitites\SimpleCustomerAccount.cs" />
-    <Compile Include="Entitites\UserRole.cs" />
-    <Compile Include="IdentityMapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="IdentityUserStore.cs" />
     <Compile Include="IdentityUserManager.cs" />

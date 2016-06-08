@@ -4,41 +4,36 @@ using System.Data.Entity;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity.EntityFramework;
-using Adwaer.Identity.Entitites;
-using SimpleCustomerAccount = Adwaer.Identity.Entitites.SimpleCustomerAccount;
 
 namespace Adwaer.Identity
 {
-    public class IdentityUserStore :
+    public class IdentityUserStore<T, TUserRole> :
         UserStore
-            <SimpleCustomerAccount, IdentityRole<Guid, UserRole>, Guid, IdentityUserLogin<Guid>, UserRole,
-                IdentityUserClaim<Guid>>
+            <T, IdentityRole<Guid, TUserRole>, Guid, IdentityUserLogin<Guid>, TUserRole,
+                IdentityUserClaim<Guid>> where T : IdentityUser<Guid, IdentityUserLogin<Guid>, TUserRole, IdentityUserClaim<Guid>> where TUserRole : IdentityUserRole<Guid>, new()
     {
         public IdentityUserStore(DbContext ctx) : base(ctx)
         {
         }
 
+        public delegate void OnCreateDelegate(T user);
+        public event OnCreateDelegate OnCreate;
+
         /// <summary>
         /// Insert an entity
         /// </summary>
         /// <param name="user"/>
-        public override Task CreateAsync(SimpleCustomerAccount user)
+        public override Task CreateAsync(T user)
         {
-            if (user.Customer == null)
-            {
-                user.Customer = new Customer
-                {
-                    DisplayName = user.UserName
-                };
-            }
+            OnCreate?.Invoke(user);
 
             Context
-                .Set<SimpleCustomerAccount>()
+                .Set<T>()
                 .Add(user);
 
             //if (!user.Roles.Any())
             //{
-            //    user.Roles.Add(new UserRole
+            //    user.Roles.Add(new TUserRole
             //    {
             //        RoleId = Guid.Empty
             //    });
@@ -52,7 +47,7 @@ namespace Adwaer.Identity
         /// Update an entity
         /// </summary>
         /// <param name="user"/>
-        public override Task UpdateAsync(SimpleCustomerAccount user)
+        public override Task UpdateAsync(T user)
         {
             return Context.SaveChangesAsync();
         }
@@ -61,7 +56,7 @@ namespace Adwaer.Identity
         /// Mark an entity for deletion
         /// </summary>
         /// <param name="user"/>
-        public override Task DeleteAsync(SimpleCustomerAccount user)
+        public override Task DeleteAsync(T user)
         {
             throw new NotImplementedException();
             //user.IsDeleted = true;
@@ -75,10 +70,10 @@ namespace Adwaer.Identity
         /// </summary>
         /// <param name="userId"/>
         /// <returns/>
-        public override async Task<SimpleCustomerAccount> FindByIdAsync(Guid userId)
+        public override async Task<T> FindByIdAsync(Guid userId)
         {
-            SimpleCustomerAccount user =
-                (await Context.Set<SimpleCustomerAccount>().FirstOrDefaultAsync(u => u.Id == userId));
+            T user =
+                (await Context.Set<T>().FirstOrDefaultAsync(u => u.Id == userId));
             return user;
         }
 
@@ -87,14 +82,14 @@ namespace Adwaer.Identity
         /// </summary>
         /// <param name="userName"/>
         /// <returns/>
-        public override async Task<SimpleCustomerAccount> FindByNameAsync(string userName)
+        public override async Task<T> FindByNameAsync(string userName)
         {
             return await Context
-                .Set<SimpleCustomerAccount>()
+                .Set<T>()
                 .FirstOrDefaultAsync(ac => ac.Email == userName);
         }
 
-        public override Task<IList<string>> GetRolesAsync(SimpleCustomerAccount user)
+        public override Task<IList<string>> GetRolesAsync(T user)
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
 
@@ -102,7 +97,7 @@ namespace Adwaer.Identity
             return Task.FromResult(roles);
         }
 
-        public override Task<IList<Claim>> GetClaimsAsync(SimpleCustomerAccount user)
+        public override Task<IList<Claim>> GetClaimsAsync(T user)
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
 

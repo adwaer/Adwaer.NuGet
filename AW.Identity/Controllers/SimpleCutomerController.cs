@@ -6,18 +6,17 @@ using System.Web;
 using System.Web.Http;
 using AutoMapper;
 using Microsoft.AspNet.Identity;
-using Adwaer.Identity.Entitites;
 using Adwaer.Identity.ViewModel;
 
 namespace Adwaer.Identity.Controllers
 {
     [AllowAnonymous]
-    public class SimpleCustomerController : ApiController
+    public class SimpleCustomerController<T> : ApiController where T : class, IUser<Guid>
     {
-        private readonly UserManager<SimpleCustomerAccount, Guid> _userManager;
+        private readonly UserManager<T, Guid> _userManager;
         private readonly IMapper _mapper;
 
-        public SimpleCustomerController(UserManager<SimpleCustomerAccount, Guid> userManager, IMapper mapper)
+        public SimpleCustomerController(UserManager<T, Guid> userManager, IMapper mapper)
         {
             _userManager = userManager;
             _mapper = mapper;
@@ -44,7 +43,7 @@ namespace Adwaer.Identity.Controllers
 
         public async Task<IHttpActionResult> Post(RegistrationModel id)
         {
-            var account = _mapper.Map<SimpleCustomerAccount>(id);
+            var account = _mapper.Map<T>(id);
             var result = await _userManager
                 .CreateAsync(account, id.Password);
             if (result == IdentityResult.Success)
