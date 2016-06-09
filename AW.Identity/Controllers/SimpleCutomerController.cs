@@ -11,7 +11,7 @@ using Adwaer.Identity.ViewModel;
 namespace Adwaer.Identity.Controllers
 {
     [AllowAnonymous]
-    public class SimpleCustomerController<T> : ApiController where T : class, IUser<Guid>
+    public class SimpleCustomerController<T, TViewModel> : ApiController where T : class, IUser<Guid> where TViewModel : IRegistrationModel
     {
         private readonly UserManager<T, Guid> _userManager;
         private readonly IMapper _mapper;
@@ -22,7 +22,7 @@ namespace Adwaer.Identity.Controllers
             _mapper = mapper;
         }
 
-        public async Task<IHttpActionResult> Get(string login, string password)
+        public virtual async Task<IHttpActionResult> Get(string login, string password)
         {
             var result = await _userManager.FindAsync(login, password);
             if (result == null)
@@ -40,8 +40,8 @@ namespace Adwaer.Identity.Controllers
 
             return Ok();
         }
-
-        public async Task<IHttpActionResult> Post(RegistrationModel id)
+        
+        public virtual async Task<IHttpActionResult> Post(TViewModel id)
         {
             var account = _mapper.Map<T>(id);
             var result = await _userManager
@@ -57,6 +57,33 @@ namespace Adwaer.Identity.Controllers
             }
 
             return BadRequest(result.ToString());
+        }
+
+
+        [HttpPost]
+        public async Task<IHttpActionResult> Confirm(Guid userId, string token)
+        {
+            bool isConfirmed;
+            try
+            {
+                isConfirmed = await _userManager.IsEmailConfirmedAsync(userId);
+            }
+            catch (InvalidOperationException)
+            {
+                return BadRequest("user_not_found");
+            }
+
+            if (isConfirmed)
+            {
+                return BadRequest("already_confirmed");
+            }
+
+            var result = await _userManager.ConfirmEmailAsync(userId, token);
+            if (result == IdentityResult.Success)
+            {
+                return Ok();
+            }
+            return BadRequest("cannot_confirm");
         }
 
         private IHttpActionResult GetErrorResult(IdentityResult result)

@@ -2,7 +2,6 @@
 using System.Web;
 using Autofac;
 using Autofac.Integration.WebApi;
-using AutoMapper;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;

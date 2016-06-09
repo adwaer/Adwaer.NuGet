@@ -12,8 +12,10 @@ namespace Adwaer.Identity
             <T, IdentityRole<Guid, TUserRole>, Guid, IdentityUserLogin<Guid>, TUserRole,
                 IdentityUserClaim<Guid>> where T : IdentityUser<Guid, IdentityUserLogin<Guid>, TUserRole, IdentityUserClaim<Guid>> where TUserRole : IdentityUserRole<Guid>, new()
     {
-        public IdentityUserStore(DbContext ctx) : base(ctx)
+        public IdentityUserStore(DbContext ctx, IOnCreateUserAction<T> onCreateAction) 
+            : base(ctx)
         {
+            OnCreate += onCreateAction.Execute;
         }
 
         public delegate void OnCreateDelegate(T user);
