@@ -91,6 +91,11 @@ namespace Adwaer.Identity
                 .FirstOrDefaultAsync(ac => ac.Email == userName);
         }
 
+        public override Task<T> FindByEmailAsync(string email)
+        {
+            return FindByNameAsync(email);
+        }
+
         public override Task<IList<string>> GetRolesAsync(T user)
         {
             if (user == null) throw new ArgumentNullException(nameof(user));

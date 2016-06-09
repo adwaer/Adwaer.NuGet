@@ -11,12 +11,12 @@ using Adwaer.Identity.ViewModel;
 namespace Adwaer.Identity.Controllers
 {
     [AllowAnonymous]
-    public class SimpleCustomerController<T, TViewModel> : ApiController where T : class, IUser<Guid> where TViewModel : IRegistrationModel
+    public class UserControllerBase<T, TViewModel> : ApiController where T : class, IUser<Guid> where TViewModel : IRegistrationModel
     {
         private readonly UserManager<T, Guid> _userManager;
         private readonly IMapper _mapper;
 
-        public SimpleCustomerController(UserManager<T, Guid> userManager, IMapper mapper)
+        public UserControllerBase(UserManager<T, Guid> userManager, IMapper mapper)
         {
             _userManager = userManager;
             _mapper = mapper;
@@ -44,10 +44,16 @@ namespace Adwaer.Identity.Controllers
         public virtual async Task<IHttpActionResult> Post(TViewModel id)
         {
             var account = _mapper.Map<T>(id);
+            if (await _userManager.FindByEmailAsync(id.Email) != null)
+            {
+                return BadRequest("username_busy");
+            }
+
             var result = await _userManager
                 .CreateAsync(account, id.Password);
             if (result == IdentityResult.Success)
             {
+                RegistrationCompleted(account.Id);
                 return Ok();
             }
             IHttpActionResult errorResult = GetErrorResult(result);
@@ -59,6 +65,10 @@ namespace Adwaer.Identity.Controllers
             return BadRequest(result.ToString());
         }
 
+        protected virtual void RegistrationCompleted(Guid id)
+        {
+            
+        }
 
         [HttpPost]
         public async Task<IHttpActionResult> Confirm(Guid userId, string token)

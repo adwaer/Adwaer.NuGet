@@ -9,5 +9,10 @@ namespace Adwaer.Identity.ViewModel
         [DataMember(Name = "password")]
         [DataType(DataType.Password)]
         string Password { get; set; }
+
+        [Required]
+        [DataType(DataType.EmailAddress)]
+        [DataMember(Name = "email")]
+        string Email { get; set; }
     }
 }
