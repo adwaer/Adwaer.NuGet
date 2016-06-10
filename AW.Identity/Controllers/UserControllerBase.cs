@@ -69,10 +69,14 @@ namespace Adwaer.Identity.Controllers
         {
             
         }
-
-        [HttpPost]
-        public async Task<IHttpActionResult> Confirm(Guid userId, string token)
+        
+        public virtual async Task<IHttpActionResult> Confirm(Guid userId, string token)
         {
+            if (await _userManager.FindByIdAsync(userId) == null)
+            {
+                return BadRequest("user_not_found");
+            }
+
             bool isConfirmed;
             try
             {
@@ -80,7 +84,7 @@ namespace Adwaer.Identity.Controllers
             }
             catch (InvalidOperationException)
             {
-                return BadRequest("user_not_found");
+                return BadRequest("user_check_error");
             }
 
             if (isConfirmed)
