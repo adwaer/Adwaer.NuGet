@@ -53,7 +53,7 @@ namespace Adwaer.Identity.Controllers
                 .CreateAsync(account, id.Password);
             if (result == IdentityResult.Success)
             {
-                RegistrationCompleted(account.Id);
+                await RegistrationCompleted(account.Id);
                 return Ok();
             }
             IHttpActionResult errorResult = GetErrorResult(result);
@@ -65,7 +65,7 @@ namespace Adwaer.Identity.Controllers
             return BadRequest(result.ToString());
         }
 
-        protected virtual void RegistrationCompleted(Guid id)
+        protected virtual async Task RegistrationCompleted(Guid id)
         {
             
         }
