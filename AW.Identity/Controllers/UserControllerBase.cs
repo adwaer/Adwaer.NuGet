@@ -41,7 +41,7 @@ namespace Adwaer.Identity.Controllers
             return Ok();
         }
         
-        public virtual async Task<IHttpActionResult> Post(TViewModel id)
+        public virtual async Task<IHttpActionResult> Post(TViewModel id, ConfirmByTokenViewModel model)
         {
             var account = _mapper.Map<T>(id);
             if (await _userManager.FindByEmailAsync(id.Email) != null)
@@ -98,6 +98,21 @@ namespace Adwaer.Identity.Controllers
                 return Ok();
             }
             return BadRequest("cannot_confirm");
+        }
+
+        public virtual async Task<IHttpActionResult> Restore(Guid userId, RestorePasswordViewModel model)
+        {
+            if (await _userManager.FindByIdAsync(userId) == null)
+            {
+                return BadRequest("user_not_found");
+            }
+
+            if (await _userManager.ResetPasswordAsync(userId, model.Token, model.Pwd) != IdentityResult.Success)
+            {
+                return BadRequest("cannot_restore");
+            }
+
+            return Ok();
         }
 
         private IHttpActionResult GetErrorResult(IdentityResult result)
