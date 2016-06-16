@@ -41,7 +41,7 @@ namespace Adwaer.Identity.Controllers
             return Ok();
         }
         
-        public virtual async Task<IHttpActionResult> Post(TViewModel id, ConfirmByTokenViewModel model)
+        public virtual async Task<IHttpActionResult> Post(TViewModel id)
         {
             var account = _mapper.Map<T>(id);
             if (await _userManager.FindByEmailAsync(id.Email) != null)
@@ -70,7 +70,7 @@ namespace Adwaer.Identity.Controllers
             
         }
         
-        public virtual async Task<IHttpActionResult> Confirm(Guid userId, string token)
+        public virtual async Task<IHttpActionResult> Confirm(Guid userId, ConfirmByTokenViewModel model)
         {
             if (await _userManager.FindByIdAsync(userId) == null)
             {
@@ -92,7 +92,7 @@ namespace Adwaer.Identity.Controllers
                 return BadRequest("already_confirmed");
             }
 
-            var result = await _userManager.ConfirmEmailAsync(userId, token);
+            var result = await _userManager.ConfirmEmailAsync(userId, model.Token);
             if (result == IdentityResult.Success)
             {
                 return Ok();
