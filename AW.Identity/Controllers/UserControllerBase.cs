@@ -99,7 +99,7 @@ namespace Adwaer.Identity.Controllers
             }
             return BadRequest("cannot_confirm");
         }
-
+         
         public virtual async Task<IHttpActionResult> Restore(Guid userId, RestorePasswordViewModel model)
         {
             if (await _userManager.FindByIdAsync(userId) == null)

@@ -11,20 +11,20 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>5e43e2bf-43ae-4f03-a358-31ec6120fc1f</ProjectGuid>
+    <ProjectGuid>28974919-bf92-4b6e-baa9-f6ed0d234ba5</ProjectGuid>
   </PropertyGroup>
   <PropertyGroup>
     <NuProjPath Condition=" '$(NuProjPath)' == '' ">$(MSBuildExtensionsPath)\NuProj\</NuProjPath>
   </PropertyGroup>
   <Import Project="$(NuProjPath)\NuProj.props" Condition="Exists('$(NuProjPath)\NuProj.props')" />
   <PropertyGroup Label="Configuration">
-    <Id>Adwaer.Identity</Id>
-    <Version>1.0.20</Version>
-    <Title>Adwaer.Identity</Title>
+    <Id>Adwaer.Entity</Id>
+    <Version>1.0.3</Version>
+    <Title>Adwaer.Entity</Title>
     <Authors>adwaer</Authors>
     <Owners>adwaer</Owners>
-    <Summary>Adwaer.Identity</Summary>
-    <Description>Adwaer.Identity</Description>
+    <Summary>Adwaer.Entity</Summary>
+    <Description>Adwaer.Entity</Description>
     <ReleaseNotes>
     </ReleaseNotes>
     <ProjectUrl>
@@ -32,13 +32,13 @@
     <LicenseUrl>
     </LicenseUrl>
     <Copyright>Copyright © Adwaer</Copyright>
-    <Tags>Adwaer.Identity</Tags>
+    <Tags>Adwaer.Entity</Tags>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="Readme.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AW.Identity\Adwaer.Identity.csproj" />
+    <ProjectReference Include="..\..\AW.Entity\Adwaer.Entity.csproj" />
   </ItemGroup>
   <Import Project="$(NuProjPath)\NuProj.targets" />
 </Project>
