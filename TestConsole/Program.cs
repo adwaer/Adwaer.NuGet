@@ -8,7 +8,7 @@ namespace TestConsole
         static void Main(string[] args)
         {
             var s = ContractService
-                .GetFromHttp("http://ru.global.nba.com/stats2/league/conferenceteamlist.json?locale=ru")
+                .GetFromHttp("http://testapi.nashanyanya.ru/api/workers?distanceLat=55.786513&distanceLng=49.114419")
                 .Result;
 
             Console.WriteLine(s);
