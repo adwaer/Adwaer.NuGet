@@ -54,7 +54,7 @@ namespace Adwaer.Identity.Controllers
             if (result == IdentityResult.Success)
             {
                 await RegistrationCompleted(account.Id);
-                return Ok();
+                return Ok(account.Id);
             }
             IHttpActionResult errorResult = GetErrorResult(result);
             if (errorResult != null)

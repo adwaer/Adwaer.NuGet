@@ -12,14 +12,16 @@ namespace Adwaer.Identity
             <T, IdentityRole<Guid, TUserRole>, Guid, IdentityUserLogin<Guid>, TUserRole,
                 IdentityUserClaim<Guid>> where T : IdentityUser<Guid, IdentityUserLogin<Guid>, TUserRole, IdentityUserClaim<Guid>> where TUserRole : IdentityUserRole<Guid>, new()
     {
-        public IdentityUserStore(DbContext ctx, IOnCreateUserAction<T> onCreateAction) 
+        private readonly IOnCreateUserAction<T> _onCreateAction;
+        private readonly IGetRolesAction<T> _onGetRolesAction;
+
+        public IdentityUserStore(DbContext ctx, IOnCreateUserAction<T> onCreateAction, IGetRolesAction<T> onGetRolesAction) 
             : base(ctx)
         {
-            OnCreate += onCreateAction.Execute;
+            _onCreateAction = onCreateAction;
+            _onGetRolesAction = onGetRolesAction;
         }
 
-        public delegate void OnCreateDelegate(T user);
-        public event OnCreateDelegate OnCreate;
 
         /// <summary>
         /// Insert an entity
@@ -27,7 +29,7 @@ namespace Adwaer.Identity
         /// <param name="user"/>
         public override Task CreateAsync(T user)
         {
-            OnCreate?.Invoke(user);
+            _onCreateAction.Execute(user);
 
             Context
                 .Set<T>()
@@ -62,7 +64,6 @@ namespace Adwaer.Identity
         {
             throw new NotImplementedException();
             //user.IsDeleted = true;
-            user.UserName = $"{user.UserName}_{user.Id}";
 
             return UpdateAsync(user);
         }
@@ -75,7 +76,8 @@ namespace Adwaer.Identity
         public override async Task<T> FindByIdAsync(Guid userId)
         {
             T user =
-                (await Context.Set<T>().FirstOrDefaultAsync(u => u.Id == userId));
+                await Context.Set<T>()
+                .FirstOrDefaultAsync(u => u.Id == userId);
             return user;
         }
 
@@ -100,8 +102,7 @@ namespace Adwaer.Identity
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
 
-            IList<string> roles = new string[0];
-            return Task.FromResult(roles);
+            return Task.FromResult(_onGetRolesAction.Execute(user));
         }
 
         public override Task<IList<Claim>> GetClaimsAsync(T user)
