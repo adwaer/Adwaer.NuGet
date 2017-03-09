@@ -4,9 +4,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
-using AutoMapper;
 using Microsoft.AspNet.Identity;
 using Adwaer.Identity.ViewModel;
+using Adwaer.Mapping;
 
 namespace Adwaer.Identity.Controllers
 {
@@ -14,12 +14,12 @@ namespace Adwaer.Identity.Controllers
     public class UserControllerBase<T, TViewModel> : ApiController where T : class, IUser<Guid> where TViewModel : IRegistrationModel
     {
         private readonly UserManager<T, Guid> _userManager;
-        private readonly IMapper _mapper;
+        private readonly IMapperService<T, TViewModel> _mapperService;
 
-        public UserControllerBase(UserManager<T, Guid> userManager, IMapper mapper)
+        public UserControllerBase(UserManager<T, Guid> userManager, IMapperService<T, TViewModel> mapperService)
         {
             _userManager = userManager;
-            _mapper = mapper;
+            _mapperService = mapperService;
         }
 
         public virtual async Task<IHttpActionResult> Get(string login, string password)
@@ -43,7 +43,7 @@ namespace Adwaer.Identity.Controllers
         
         public virtual async Task<IHttpActionResult> Post(TViewModel id)
         {
-            var account = _mapper.Map<T>(id);
+            var account = _mapperService.GetFrom(id);
             if (await _userManager.FindByEmailAsync(id.Email) != null)
             {
                 return BadRequest("username_busy");
